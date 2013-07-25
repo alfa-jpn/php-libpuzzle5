@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+// If your extension references something external, use ARG_WITH
+// ARG_WITH("libpuzzle5", "for libpuzzle5 support", "no");
+
+// Otherwise, use ARG_ENABLE
+// ARG_ENABLE("libpuzzle5", "enable libpuzzle5 support", "no");
+
+if (PHP_LIBPUZZLE5 != "no") {
+	EXTENSION("libpuzzle5", "libpuzzle5.c");
+}
+
