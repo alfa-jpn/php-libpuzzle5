@@ -11,15 +11,20 @@ How to install
  * http://www.pureftpd.org/project/libpuzzle
 
 2.install php-libpuzzle5
+
+```sh
  php-libpuzzle5 $ phpize
  php-libpuzzle5 $ ./configure
  php-libpuzzle5 $ make
  php-libpuzzle5 $ make test
  php-libpuzzle5 $ make install
+```
 
 
 3. add line in php.ini
- extension=libpuzzle5.so
+```
+extension=libpuzzle5.so
+```
 
 How to use
 ==============
