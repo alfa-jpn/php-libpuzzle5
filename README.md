@@ -35,3 +35,8 @@ Libpuzzle
 
 Libpuzzle with PHP
 * http://www.pureftpd.org/project/libpuzzle/php
+
+LICENSE
+==============
+It is released under the 2-clauses BSD public license.
+
