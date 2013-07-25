@@ -10,12 +10,13 @@
 #include <puzzle.h>
 #include "php_libpuzzle5.h"
 
-/* 名前衝突を避けるためのマクロっぽい。 */
-ZEND_DECLARE_MODULE_GLOBALS(libpuzzle5)
 
+ZEND_DECLARE_MODULE_GLOBALS(libpuzzle5)
 
 /* True global resources - no need for thread safety here */
 static int le_libpuzzle5;
+static PHP_GINIT_FUNCTION(libpuzzle5);
+static PHP_GSHUTDOWN_FUNCTION(libpuzzle5);
 
 /* {{{ libpuzzle5_functions[]
  *
@@ -43,20 +44,20 @@ const zend_function_entry libpuzzle5_functions[] = {
 /* {{{ libpuzzle5_module_entry
  */
 zend_module_entry libpuzzle5_module_entry = {
-#if ZEND_MODULE_API_NO >= 20010901
 	STANDARD_MODULE_HEADER,
-#endif
 	"libpuzzle5",
 	libpuzzle5_functions,
 	PHP_MINIT(libpuzzle5),
 	PHP_MSHUTDOWN(libpuzzle5),
-	PHP_RINIT(libpuzzle5),		/* Replace with NULL if there's nothing to do at request start */
-	PHP_RSHUTDOWN(libpuzzle5),	/* Replace with NULL if there's nothing to do at request end */
+	PHP_RINIT(libpuzzle5),
+	PHP_RSHUTDOWN(libpuzzle5),
 	PHP_MINFO(libpuzzle5),
-#if ZEND_MODULE_API_NO >= 20010901
-	"0.1", /* Replace with version number for your extension */
-#endif
-	STANDARD_MODULE_PROPERTIES
+	NO_VERSION_YET,
+	PHP_MODULE_GLOBALS(libpuzzle5),
+	PHP_GINIT(libpuzzle5),
+	PHP_GSHUTDOWN(libpuzzle5),
+	NULL,
+	STANDARD_MODULE_PROPERTIES_EX
 };
 /* }}} */
 
@@ -64,31 +65,29 @@ zend_module_entry libpuzzle5_module_entry = {
 ZEND_GET_MODULE(libpuzzle5)
 #endif
 
-/* {{{ PHP_INI
- */
-/* Remove comments and fill if you need to have entries in php.ini
-PHP_INI_BEGIN()
-    STD_PHP_INI_ENTRY("libpuzzle5.global_value",      "42", PHP_INI_ALL, OnUpdateLong, global_value, zend_libpuzzle5_globals, libpuzzle5_globals)
-    STD_PHP_INI_ENTRY("libpuzzle5.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_libpuzzle5_globals, libpuzzle5_globals)
-PHP_INI_END()
-*/
-/* }}} */
 
-/* {{{ php_libpuzzle5_init_globals
+/* {{{ PHP_GINIT_FUNCTION
  */
-static void php_libpuzzle5_init_globals(zend_libpuzzle5_globals *libpuzzle5_globals)
+PHP_GINIT_FUNCTION(libpuzzle5)
 {
 	libpuzzle5_globals->global_context = emalloc(sizeof(PuzzleContext));
 }
-
 /* }}} */
+
+/* {{{ PHP_GSHUTDOWN_FUNCTION
+ */
+PHP_GSHUTDOWN_FUNCTION(libpuzzle5)
+{
+	efree(libpuzzle5_globals->global_context);
+}
+/* }}} */
+
+
 
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(libpuzzle5)
 {
-	ZEND_INIT_MODULE_GLOBALS(libpuzzle5, php_libpuzzle5_init_globals, NULL);
-	
     REGISTER_DOUBLE_CONSTANT("PUZZLE_CVEC_SIMILARITY_THRESHOLD",
                              PUZZLE_CVEC_SIMILARITY_THRESHOLD,
                              CONST_CS | CONST_PERSISTENT);
@@ -101,7 +100,6 @@ PHP_MINIT_FUNCTION(libpuzzle5)
     REGISTER_DOUBLE_CONSTANT("PUZZLE_CVEC_SIMILARITY_LOWER_THRESHOLD",
                              PUZZLE_CVEC_SIMILARITY_LOWER_THRESHOLD,
                              CONST_CS | CONST_PERSISTENT);
-    
 	return SUCCESS;
 }
 /* }}} */
@@ -110,10 +108,11 @@ PHP_MINIT_FUNCTION(libpuzzle5)
  */
 PHP_MSHUTDOWN_FUNCTION(libpuzzle5)
 {
-	efree(LIBPUZZLE5_G(global_context));
 	return SUCCESS;
 }
 /* }}} */
+
+
 
 /* Remove if there's nothing to do at request start */
 /* {{{ PHP_RINIT_FUNCTION
@@ -142,10 +141,6 @@ PHP_MINFO_FUNCTION(libpuzzle5)
 	php_info_print_table_start();
 	php_info_print_table_header(2, "libpuzzle5 support", "enabled");
 	php_info_print_table_end();
-
-	/* Remove comments if you have entries in php.ini
-	DISPLAY_INI_ENTRIES();
-	*/
 }
 /* }}} */
 
