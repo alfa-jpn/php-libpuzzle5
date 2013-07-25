@@ -70,7 +70,7 @@ ZEND_GET_MODULE(libpuzzle5)
  */
 PHP_GINIT_FUNCTION(libpuzzle5)
 {
-	libpuzzle5_globals->global_context = emalloc(sizeof(PuzzleContext));
+	libpuzzle5_globals->global_context = pemalloc(sizeof(PuzzleContext), 1);
 }
 /* }}} */
 
@@ -78,7 +78,7 @@ PHP_GINIT_FUNCTION(libpuzzle5)
  */
 PHP_GSHUTDOWN_FUNCTION(libpuzzle5)
 {
-	efree(libpuzzle5_globals->global_context);
+	pefree(libpuzzle5_globals->global_context, 1);
 }
 /* }}} */
 
